@@ -17,6 +17,7 @@ MWGenWData::~MWGenWData()
 
 void MWGenWData::on_btnGenWData_clicked() {
     QFileDialog filedialog(this);
+    filedialog.show();
 }
 
 void MWGenWData::on_btnClose_clicked()

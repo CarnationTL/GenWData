@@ -1,0 +1,12 @@
+-I/usr/local/Trolltech/Qt-4.8.4/mkspecs/linux-g++
+-I.
+-I/usr/local/Trolltech/Qt-4.8.4/include/QtCore
+-I/usr/local/Trolltech/Qt-4.8.4/include/QtGui
+-I/usr/local/Trolltech/Qt-4.8.4/include
+-I/usr/local/qwt-6.1.0-rc3/include
+-D_REENTRANT
+-DQT_GUI_LIB
+-DQT_CORE_LIB
+-DQT_SHARED
+-Wall
+-W
