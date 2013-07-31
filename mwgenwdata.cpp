@@ -6,17 +6,24 @@
 #define D_CNT 256
 #define INVALUE -1
 
+#define S_ITEM_AMP "amp"
+#define S_ITEM_TIME "time"
+#define S_ITEM_DATA "data"
+#define S_ITEM_TYPE "type"
+
+
 MWGenWData::MWGenWData(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MWGenWData)
 {
     ui->setupUi(this);
     _dcnt = D_CNT;
-    _type = INVALUE;
+
 
     plot = ui->qwtPlot;
     plot->setAutoDelete (true);
     ui->rbSin->setChecked (true);
+    _type = SINE;
     toggleDutycHide (false);
     pc = NULL;
     _amp = -1.0;
@@ -52,31 +59,41 @@ void MWGenWData::on_btnGenWData_clicked() {
 
     switch (_type) {
     case SINE:
-        set.setValue ("type", "SINE");
+        set.setValue (S_ITEM_TYPE, "SINE");
         break;
     case SAW:
-        set.setValue ("type", "SAW");
+        set.setValue (S_ITEM_TYPE, "SAW");
         break;
     case SQU:
-        set.setValue("type", "SQU");
+        set.setValue (S_ITEM_TYPE, "SQU");
         break;
     case TRI:
-        set.setValue("type", "TRI");
+        set.setValue (S_ITEM_TYPE, "TRI");
         break;
     case CUS:
-        set.setValue("type", "CUS");
+        set.setValue (S_ITEM_TYPE, "CUS");
         break;
     default:
         break;
     }
-    set.setValue("data", sl);
 
-    QStringList list =  set.value ("data").toStringList ();
+    //AMP
+    set.setValue (S_ITEM_AMP, QString::number (ui->sbAMP->value (), 'g', 3));
+    //TIME
+    set.setValue (S_ITEM_TIME, QString::number (ui->sbTIME->value (), 'g', 3));
+
+    set.setValue(S_ITEM_DATA, sl);
+
+    QStringList list =  set.value (S_ITEM_DATA).toStringList ();
     for(int i = 0; i < list.length (); i++) {
         qDebug () << list.at (i).toDouble ();
     }
 
     qDebug () << fn ;
+
+    //read form file
+    QSettings setread(fn);
+    qDebug () << setread.value (S_ITEM_AMP).toDouble ();
 } 
 
 
@@ -217,4 +234,3 @@ void MWGenWData::on_sbDUTY_valueChanged(double arg1) {
             break;
     }
 }
-
