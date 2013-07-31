@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>794</width>
-    <height>567</height>
+    <width>817</width>
+    <height>713</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <rect>
       <x>10</x>
       <y>20</y>
-      <width>141</width>
+      <width>171</width>
       <height>241</height>
      </rect>
     </property>
@@ -28,6 +28,9 @@
       <width>141</width>
       <height>0</height>
      </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
     </property>
     <property name="title">
      <string>波形选择</string>
@@ -111,15 +114,100 @@
    <widget class="QGroupBox" name="gbPara">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>270</y>
       <width>171</width>
-      <height>211</height>
+      <height>221</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
     </property>
     <property name="title">
      <string>参数设置</string>
     </property>
+    <widget class="QLabel" name="lbFEQ">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>40</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>FEQ:</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="sbAMP">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>47</y>
+       <width>71</width>
+       <height>30</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbAMP">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>40</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>AMP:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbDUTY">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>170</y>
+       <width>40</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>DUTY:</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="sbDUTY">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>167</y>
+       <width>71</width>
+       <height>30</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbTIME">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>40</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TIME:</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="sbTIME">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>87</y>
+       <width>71</width>
+       <height>30</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QPushButton" name="btnGenWData">
     <property name="geometry">
@@ -147,13 +235,25 @@
      <string>关闭</string>
     </property>
    </widget>
+   <zorder>gbPara</zorder>
+   <zorder>gbWave</zorder>
+   <zorder>qwtPlot</zorder>
+   <zorder>btnGenWData</zorder>
+   <zorder>btnClose</zorder>
+   <zorder>lbAMP</zorder>
+   <zorder>lbTIME</zorder>
+   <zorder>sbAMP</zorder>
+   <zorder>sbTIME</zorder>
+   <zorder>lbFEQ</zorder>
+   <zorder>lbDUTY</zorder>
+   <zorder>sbDUTY</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>794</width>
+     <width>817</width>
      <height>28</height>
     </rect>
    </property>
