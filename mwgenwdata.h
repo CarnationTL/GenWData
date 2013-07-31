@@ -126,6 +126,8 @@ private:
     double _amp;
     double _time;
     double _dutyc;
+    void readSetting(QString fn);
+    void setrbCheck(int t, bool val);
 };
 
 #endif // MWGENWDATA_H

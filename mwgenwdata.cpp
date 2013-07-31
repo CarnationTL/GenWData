@@ -81,9 +81,10 @@ void MWGenWData::on_btnGenWData_clicked() {
     set.setValue (S_ITEM_AMP, QString::number (ui->sbAMP->value (), 'g', 3));
     //TIME
     set.setValue (S_ITEM_TIME, QString::number (ui->sbTIME->value (), 'g', 3));
-
+    //CURVE data
     set.setValue(S_ITEM_DATA, sl);
 
+#if 1
     QStringList list =  set.value (S_ITEM_DATA).toStringList ();
     for(int i = 0; i < list.length (); i++) {
         qDebug () << list.at (i).toDouble ();
@@ -94,6 +95,8 @@ void MWGenWData::on_btnGenWData_clicked() {
     //read form file
     QSettings setread(fn);
     qDebug () << setread.value (S_ITEM_AMP).toDouble ();
+
+#endif
 } 
 
 
@@ -168,6 +171,78 @@ void MWGenWData::doPlotCus() {
     plot->replot ();
 }
 
+void MWGenWData::readSetting(QString fn) {
+    if(fn.length () > 0) {
+        QSettings set(fn);
+        int t = set.value (S_ITEM_TYPE).toInt ();
+        switch (t) {
+        case SINE:
+            setrbCheck (SINE);
+            break;
+        case TRI:
+            setrbCheck (TRI);
+            break;
+        case SAW:
+            setrbCheck (SAW);
+            break;
+        case SQU:
+            setrbCheck (SQU);
+            break;
+        case CUS:
+            setrbCheck (CUS);
+            break;
+        default:
+            break;
+        }
+    }
+    QMessageBox::warning (this, "waring", "settings file empty!", QMessageBox::Yes);
+}
+
+void MWGenWData::setrbCheck(int t) {
+    if(t == -1 || )
+        return;
+    bool val = true;
+    switch (t) {
+    case SINE:
+        ui->rbSin->setChecked (val);
+        ui->rbTri->setChecked (!val);
+        ui->rbSaw->setChecked (!val);
+        ui->rbSquare->setChecked (!val);
+        ui->rbCus->setChecked (!val);
+        break;
+    case TRI:
+        ui->rbSin->setChecked (!val);
+        ui->rbTri->setChecked (val);
+        ui->rbSaw->setChecked (!val);
+        ui->rbSquare->setChecked (!val);
+        ui->rbCus->setChecked (!val);
+        break;
+    case SAW:
+        ui->rbSin->setChecked (!val);
+        ui->rbTri->setChecked (!val);
+        ui->rbSaw->setChecked (val);
+        ui->rbSquare->setChecked (!val);
+        ui->rbCus->setChecked (!val);
+        break;
+    case SQU:
+        ui->rbSin->setChecked (!val);
+        ui->rbTri->setChecked (!val);
+        ui->rbSaw->setChecked (!val);
+        ui->rbSquare->setChecked (val);
+        ui->rbCus->setChecked (!val);
+        break;
+    case CUS:
+        ui->rbSin->setChecked (!val);
+        ui->rbTri->setChecked (!val);
+        ui->rbSaw->setChecked (!val);
+        ui->rbSquare->setChecked (!val);
+        ui->rbCus->setChecked (val);
+        break;
+    default:
+        break;
+    }
+}
+
 void MWGenWData::on_sbAMP_valueChanged(double arg1) {
     if(arg1 >= 0.0) {
         _amp = arg1;
@@ -234,3 +309,5 @@ void MWGenWData::on_sbDUTY_valueChanged(double arg1) {
             break;
     }
 }
+
+
