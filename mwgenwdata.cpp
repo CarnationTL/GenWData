@@ -2,6 +2,7 @@
 #include "ui_mwgenwdata.h"
 #include <QSettings>
 #include <QProgressDialog>
+#include <Qwt/qwt_series_store.h>
 
 #define D_CNT 256
 #define INVALUE -1
@@ -9,6 +10,7 @@
 #define S_ITEM_AMP "amp"
 #define S_ITEM_TIME "time"
 #define S_ITEM_DATA "data"
+#define S_ITEM_DUYC "dutyc"
 #define S_ITEM_TYPE "type"
 
 
@@ -52,9 +54,16 @@ void MWGenWData::on_btnGenWData_clicked() {
     }
 
     QSettings set(fn, QSettings::IniFormat);
-    QStringList sl;
-    for(int i = 0; i < _dcnt; i++) {
-        sl << QString::number(i, 10);
+
+    QStringList slx;
+    QStringList sly;
+    QStringList txy;
+    int size = pc->data ()->size ();
+    for(int i = 0; i < size; i++) {
+        QPointF pint = pc->data ()->sample (i);
+        slx << QString::number (pint.x (), 'g', 3);
+        sly << QString::number (pint.y (), 'g', 3);
+        txy << consSdata (QString::number (pint.x (), 'g', 3), QString::number (pint.y (), 'g', 3));
     }
 
     switch (_type) {
@@ -66,6 +75,7 @@ void MWGenWData::on_btnGenWData_clicked() {
         break;
     case SQU:
         set.setValue (S_ITEM_TYPE, "SQU");
+        set.setValue (S_ITEM_DUYC, QString::number (ui->sbDUTY->value (), 'g', 3));
         break;
     case TRI:
         set.setValue (S_ITEM_TYPE, "TRI");
@@ -82,9 +92,18 @@ void MWGenWData::on_btnGenWData_clicked() {
     //TIME
     set.setValue (S_ITEM_TIME, QString::number (ui->sbTIME->value (), 'g', 3));
     //CURVE data
-    set.setValue(S_ITEM_DATA, sl);
+   // set.setValue(S_ITEM_DATA_X, slx);
+   // set.setValue(S_ITEM_DATA_Y, sly);
+    set.setValue (S_ITEM_DATA, txy);
 
-#if 1
+
+#if 0
+    QString aa("(12.0,13.0)");
+    qDebug () << deconsSdata (aa);
+#endif
+
+
+#if 0
     QStringList list =  set.value (S_ITEM_DATA).toStringList ();
     for(int i = 0; i < list.length (); i++) {
         qDebug () << list.at (i).toDouble ();
@@ -168,12 +187,14 @@ void MWGenWData::doPlot(int t) {
             pc->setData (new SinusData(a));
             break;
         case TRI:
+            pc->setData (new TriData(a));
             break;
         case SAW:
-            pc->setData (new SawData());
+            pc->setData (new SawData(a));
             break;
         case SQU:
-            pc->setData (new SquData());
+            if(_dutyc)
+            pc->setData (new SquData(a, _dutyc));
             break;
         case CUS:
             break;
@@ -188,14 +209,72 @@ void MWGenWData::doPlot(int t) {
     plot->replot ();
 }
 
+void MWGenWData::doPlot(QStringList strdata) {
+    if(strdata.length () > 0) {
+        QPointF point;
+        QVector <QPointF> vec;
+        for(int i = 0; i < strdata.length (); i++) {
+            point.setX (deconsSdata (strdata.at (i)).at (0).toDouble ());
+            point.setY (deconsSdata (strdata.at (i)).at (1).toDouble ());
+            vec.append (point);
+        }
+        if(pc == NULL) {
+            pc = new QwtPlotCurve("test");
+        }
 
+        int a, ti;
+        if(_amp < 0)
+            a = -_amp;
+        else
+            a = _amp;
+        if(_time < 0)
+            ti = -_time;
+        else
+            ti = _time;
+
+        plot->setAxisScale (QwtPlot::xBottom, 0, ti);
+        plot->setAxisScale (QwtPlot::yLeft, -a, a);
+
+        if(pc != NULL) {
+            pc->setSamples (vec);
+
+#if 0
+            switch (t) {
+            case SINE:
+                pc->setData (new SinusData(a));
+                break;
+            case TRI:
+                pc->setData (new TriData(a));
+                break;
+            case SAW:
+                pc->setData (new SawData(a));
+                break;
+            case SQU:
+                if(_dutyc)
+                    pc->setData (new SquData(a, _dutyc));
+                break;
+            case CUS:
+                break;
+            default:
+                break;
+
+        }
+#endif
+        //QwtSetSeriesData *sdata;
+
+        }
+        pc->attach (plot);
+        plot->show ();
+        plot->replot ();
+    }
+}
 //do plot for cus curves
 void MWGenWData::doPlotCus() {
     pc = new QwtPlotCurve("test");
     //QwtSetSeriesData *sdata;
     plot->setAxisAutoScale (QwtPlot::xBottom, true);
     plot->setAxisAutoScale (QwtPlot::yLeft, true);
-    pc->setData (new TriData());
+    pc->setData (new TriData(10));
     pc->attach (plot);
     plot->show ();
     plot->replot ();
@@ -288,6 +367,20 @@ void MWGenWData::setTimeSp(double time) {
     }
 }
 
+QString MWGenWData::consSdata(QString x, QString y) {
+    return QString("(") + x + QString(",") + y + QString(")");
+}
+
+QStringList MWGenWData::deconsSdata(QString xy) {
+    if(xy.size () < 5)
+        return QStringList("");
+    QStringList strl = xy.split (",");
+    QStringList ret;
+    ret << strl.at (0).split ("(").at (1);
+    ret << strl.at (1).split (")").at (0);
+    return ret;
+}
+
 void MWGenWData::on_sbAMP_valueChanged(double arg1) {
     if(arg1 >= 0.0) {
         _amp = arg1;
@@ -355,4 +448,52 @@ void MWGenWData::on_sbDUTY_valueChanged(double arg1) {
         default:
             break;
     }
+}
+
+
+//load data files
+void MWGenWData::on_btnLoad_clicked() {
+    QFileDialog fp;
+    //QString fn = fp.getSaveFileName (this, "Save Data File", ".", "Data (*.wdata)");
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
+            ".",
+            tr("Data (*.wdata)"));
+    if(fileName.size () > 0) {
+        qDebug() << fileName ;
+    }
+    QSettings set(fileName, QSettings::IniFormat);
+
+
+    QString _t = set.value (S_ITEM_TYPE, "SINE").toString ();
+    if(_t == QString("SINE")) {
+        _type = SINE;
+        setrbCheck (SINE);
+    } else if(_t == QString("TRI")) {
+        _type = TRI;
+        setrbCheck (TRI);
+    } else if(_t == QString("SAW")) {
+        _type = SAW;
+        setrbCheck (SAW);
+    } else if(_t == QString("SQU")) {
+        _type = SQU;
+        setrbCheck (SQU);
+    } else if(_t == QString("CUS")) {
+        _type = CUS;
+        setrbCheck (CUS);
+    }
+
+
+    _amp = set.value (S_ITEM_AMP, 0.0).toDouble ();
+    ui->sbAMP->setValue (_amp);
+    _time = set.value (S_ITEM_TIME, 0.0).toDouble ();
+    ui->sbTIME->setValue (_time);
+
+    if(_type == SQU) {
+        _dutyc = set.value (S_ITEM_DUYC, 0.5).toDouble ();
+        ui->sbDUTY->setValue (_dutyc);
+    }
+
+    //set data
+    doPlot (set.value (S_ITEM_DATA, "").toStringList ());
+    return;
 }

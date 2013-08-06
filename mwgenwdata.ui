@@ -212,7 +212,7 @@
    <widget class="QPushButton" name="btnGenWData">
     <property name="geometry">
      <rect>
-      <x>440</x>
+      <x>390</x>
       <y>460</y>
       <width>111</width>
       <height>28</height>
@@ -225,7 +225,7 @@
    <widget class="QPushButton" name="btnClose">
     <property name="geometry">
      <rect>
-      <x>580</x>
+      <x>660</x>
       <y>460</y>
       <width>94</width>
       <height>28</height>
@@ -235,11 +235,25 @@
      <string>关闭</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btnLoad">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>460</y>
+      <width>111</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string> 载入数据文件</string>
+    </property>
+   </widget>
    <zorder>gbPara</zorder>
    <zorder>gbWave</zorder>
    <zorder>qwtPlot</zorder>
    <zorder>btnGenWData</zorder>
    <zorder>btnClose</zorder>
+   <zorder>btnLoad</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
