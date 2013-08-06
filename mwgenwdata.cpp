@@ -140,22 +140,52 @@ void MWGenWData::toggleDutycHide(bool f) {
 
 
 //do plot for regular curves
-void MWGenWData::doPlot() {
+void MWGenWData::doPlot(int t) {
 
     if(pc == NULL) {
         pc = new QwtPlotCurve("test");
     }
 
-    if(pc->dataSize () >= 0) {
-        //QwtSetSeriesData *sdata;
-        plot->setAxisScale (QwtPlot::xBottom, 0.0, 10.0);
-        plot->setAxisScale (QwtPlot::yLeft, -1.0, 1.0);
-        pc->setData (new SinusData());
-        pc->attach (plot);
-        plot->show ();
-        plot->replot ();
-    }
+    int a, ti;
+    if(_amp < 0)
+        a = -_amp;
+    else
+        a = _amp;
+    if(_time < 0)
+        ti = -_time;
+    else
+        ti = _time;
 
+    plot->setAxisScale (QwtPlot::xBottom, 0, ti);
+    plot->setAxisScale (QwtPlot::yLeft, -a, a);
+
+   // plot->setAxisScale (QwtPlot::xBottom, 0.0, 10.0);
+   // plot->setAxisScale (QwtPlot::yLeft, -1.0, 1.0);
+
+    if(pc != NULL) {
+        switch (t) {
+        case SINE:
+            pc->setData (new SinusData(a));
+            break;
+        case TRI:
+            break;
+        case SAW:
+            pc->setData (new SawData());
+            break;
+        case SQU:
+            pc->setData (new SquData());
+            break;
+        case CUS:
+            break;
+        default:
+            break;
+        }
+        //QwtSetSeriesData *sdata;
+
+    }
+    pc->attach (plot);
+    plot->show ();
+    plot->replot ();
 }
 
 
@@ -177,7 +207,12 @@ void MWGenWData::readSetting(QString fn) {
         int t = set.value (S_ITEM_TYPE).toInt ();
         switch (t) {
         case SINE:
-            setrbCheck (SINE);
+            {
+                setrbCheck (SINE);
+                double time = set.value (S_ITEM_TIME).toDouble ();
+                setTimeSp (time);
+            }
+
             break;
         case TRI:
             setrbCheck (TRI);
@@ -199,7 +234,7 @@ void MWGenWData::readSetting(QString fn) {
 }
 
 void MWGenWData::setrbCheck(int t) {
-    if(t == -1 || )
+    if(t == -1)
         return;
     bool val = true;
     switch (t) {
@@ -243,6 +278,16 @@ void MWGenWData::setrbCheck(int t) {
     }
 }
 
+void MWGenWData::setTimeSp(double time) {
+    if(time < 0.0)
+        return;
+    if(time < 0) {
+        ui->sbTIME->setValue (0.0);
+    } else if(time > 0) {
+        ui->sbTIME->setValue (time);
+    }
+}
+
 void MWGenWData::on_sbAMP_valueChanged(double arg1) {
     if(arg1 >= 0.0) {
         _amp = arg1;
@@ -250,16 +295,16 @@ void MWGenWData::on_sbAMP_valueChanged(double arg1) {
 
     switch (_type) {
         case SINE:
-            doPlot();
+            doPlot(SINE);
             break;
         case SAW :
-            doPlot();
+            doPlot(SAW);
             break;
         case TRI :
-            doPlot();
+            doPlot(TRI);
             break;
         case SQU :
-            doPlot();
+            doPlot(SQU);
             break;
         default:
             break;
@@ -269,19 +314,21 @@ void MWGenWData::on_sbAMP_valueChanged(double arg1) {
 void MWGenWData::on_sbTIME_valueChanged(double arg1) {
     if(arg1 > 0) {
         _time = arg1;
+        double feq = 1.0 / _time;
+        ui->lbFEQ->setText (QString("FEQ:     ") + QString::number (feq, 'g', 3) + QString(" Hz"));
     }
     switch (_type) {
         case SINE:
-            doPlot();
+            doPlot(SINE);
             break;
         case SAW :
-            doPlot();
+            doPlot(SAW);
             break;
         case TRI :
-            doPlot();
+            doPlot(TRI);
             break;
         case SQU :
-            doPlot();
+            doPlot(SQU);
             break;
         default:
             break;
@@ -294,20 +341,18 @@ void MWGenWData::on_sbDUTY_valueChanged(double arg1) {
     }
     switch (_type) {
         case SINE:
-            doPlot();
+            doPlot(SINE);
             break;
         case SAW :
-            doPlot();
+            doPlot(SAW);
             break;
         case TRI :
-            doPlot();
+            doPlot(TRI);
             break;
         case SQU :
-            doPlot();
+            doPlot(SQU);
             break;
         default:
             break;
     }
 }
-
-

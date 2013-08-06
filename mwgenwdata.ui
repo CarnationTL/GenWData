@@ -131,7 +131,7 @@
       <rect>
        <x>10</x>
        <y>130</y>
-       <width>40</width>
+       <width>111</width>
        <height>20</height>
       </rect>
      </property>
@@ -240,13 +240,6 @@
    <zorder>qwtPlot</zorder>
    <zorder>btnGenWData</zorder>
    <zorder>btnClose</zorder>
-   <zorder>lbAMP</zorder>
-   <zorder>lbTIME</zorder>
-   <zorder>sbAMP</zorder>
-   <zorder>sbTIME</zorder>
-   <zorder>lbFEQ</zorder>
-   <zorder>lbDUTY</zorder>
-   <zorder>sbDUTY</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

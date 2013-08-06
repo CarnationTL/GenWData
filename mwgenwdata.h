@@ -23,14 +23,17 @@ class MWGenWData;
 class SinusData: public QwtSyntheticPointData
 {
 public:
-    SinusData():
+    SinusData(double amp):
         QwtSyntheticPointData( 100 )
     {
+        _amp = amp;
     }
     virtual double y( double x ) const
     {
-        return qSin( x );
+        return (_amp * qSin( x ));
     }
+private:
+    double _amp;
 };
 
 
@@ -42,9 +45,6 @@ public:
     {
     }
     virtual double y( double x ) const {
-
-
-
         return qAsin ( x );
     }
 };
@@ -57,12 +57,15 @@ public:
     {
     }
     virtual double y( double x ) const {
-#if 0
-		double	phase_i = fmod((*phase + 360.0 * frequency * i), 360.0);
+#if 1
+        double t = 0;
+        double *phase = &t;
+        double frequency = 0;
+        double amplitude = 10;
+        double	phase_i = fmod((*phase + 360.0 * frequency * x), 360.0);
 		double	percentPeriod = phase_i / 360.0;
-		double	dat = amplitude * 2.0 * percentPeriod;
-		sawtoothWave[i] = percentPeriod <= 0.5 ? dat : dat - 2.0 * amplitude;
-        return qAsin ( x );
+        double	dat = amplitude * 2.0 * percentPeriod;
+        return (percentPeriod <= 0.5 ? dat : dat - 2.0 * amplitude);
 #endif
     }
 };
@@ -71,14 +74,12 @@ public:
 class SquData: public QwtSyntheticPointData
 {
 public:
-#if 0
-    SawData():
+    SquData():
         QwtSyntheticPointData( 100 ) {
     }
     virtual double y( double x ) const {
         return qAsin ( x );
     }
-#endif
 };
 
 
@@ -120,14 +121,15 @@ private:
     void toggleDutycHide(bool f);
     QwtPlot *plot;
     QwtPlotCurve *pc;
-    void doPlot();
+    void doPlot(int t);
     void doPlotCus();
 
     double _amp;
     double _time;
     double _dutyc;
     void readSetting(QString fn);
-    void setrbCheck(int t, bool val);
+    void setrbCheck(int t);
+    void setTimeSp(double time);
 };
 
 #endif // MWGENWDATA_H
