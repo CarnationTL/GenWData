@@ -162,7 +162,7 @@ void MWGenWData::toggleDutycHide(bool f) {
 void MWGenWData::doPlot(int t) {
 
     if(pc == NULL) {
-        pc = new QwtPlotCurve("test");
+        pc = new QwtPlotCurve("curve");
     }
 
     int a, ti;
@@ -219,7 +219,7 @@ void MWGenWData::doPlot(QStringList strdata) {
             vec.append (point);
         }
         if(pc == NULL) {
-            pc = new QwtPlotCurve("test");
+            pc = new QwtPlotCurve("curve");
         }
 
         int a, ti;
@@ -270,11 +270,18 @@ void MWGenWData::doPlot(QStringList strdata) {
 }
 //do plot for cus curves
 void MWGenWData::doPlotCus() {
-    pc = new QwtPlotCurve("test");
+    if(pc == NULL) {
+        pc = new QwtPlotCurve("curve");
+    }
     //QwtSetSeriesData *sdata;
-    plot->setAxisAutoScale (QwtPlot::xBottom, true);
-    plot->setAxisAutoScale (QwtPlot::yLeft, true);
-    pc->setData (new TriData(10));
+    //找出最小bottom
+    plot->setAxisScale (QwtPlot::xBottom, 0, _time);
+    plot->setAxisScale (QwtPlot::yLeft, -_amp, _amp);
+    CusData *cusdata = new CusData(0.0, 0.0, 100);
+    cusdata->appendP(4.0, 3.0);
+    cusdata->appendP(6.0, 10.0);
+    int sezie = cusdata->size ();
+    pc->setData (cusdata);
     pc->attach (plot);
     plot->show ();
     plot->replot ();
@@ -399,6 +406,11 @@ void MWGenWData::on_sbAMP_valueChanged(double arg1) {
         case SQU :
             doPlot(SQU);
             break;
+#if 1
+        case CUS :
+            doPlotCus();
+            break;
+#endif
         default:
             break;
     }
@@ -482,7 +494,6 @@ void MWGenWData::on_btnLoad_clicked() {
         setrbCheck (CUS);
     }
 
-
     _amp = set.value (S_ITEM_AMP, 0.0).toDouble ();
     ui->sbAMP->setValue (_amp);
     _time = set.value (S_ITEM_TIME, 0.0).toDouble ();
@@ -496,4 +507,28 @@ void MWGenWData::on_btnLoad_clicked() {
     //set data
     doPlot (set.value (S_ITEM_DATA, "").toStringList ());
     return;
+}
+
+//value change 提供预览(部分预览)
+void MWGenWData::on_sbstartTime_valueChanged(double arg1) {
+    if(_type == CUS) {
+        if(pc == NULL) {
+            pc = new QwtPlotCurve("curve");
+        }
+    }
+}
+
+void MWGenWData::on_sbEndTime_valueChanged(double arg1) {
+}
+
+void MWGenWData::on_sbStartY_valueChanged(double arg1) {
+
+}
+
+void MWGenWData::on_sbEndY_valueChanged(double arg1) {
+
+}
+
+void MWGenWData::on_btnConfirmSeg_clicked() {
+
 }

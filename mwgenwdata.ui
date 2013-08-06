@@ -248,12 +248,138 @@
      <string> 载入数据文件</string>
     </property>
    </widget>
+   <widget class="QLabel" name="lblStartTime">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>530</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>StartTime:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="sbstartTime">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>520</y>
+      <width>91</width>
+      <height>30</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblEndTime">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>570</y>
+      <width>62</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>EndTime:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="sbEndTime">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>560</y>
+      <width>91</width>
+      <height>30</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>530</y>
+      <width>62</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>StartY:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>570</y>
+      <width>62</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>EndY:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="sbStartY">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>520</y>
+      <width>81</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <double>-1000.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>1000.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="sbEndY">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>560</y>
+      <width>81</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <double>-1000.000000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>1000.000000000000000</double>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnConfirmSeg">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>520</y>
+      <width>94</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>确认线段</string>
+    </property>
+   </widget>
    <zorder>gbPara</zorder>
    <zorder>gbWave</zorder>
    <zorder>qwtPlot</zorder>
    <zorder>btnGenWData</zorder>
    <zorder>btnClose</zorder>
    <zorder>btnLoad</zorder>
+   <zorder>lblStartTime</zorder>
+   <zorder>sbstartTime</zorder>
+   <zorder>lblEndTime</zorder>
+   <zorder>sbEndTime</zorder>
+   <zorder>label</zorder>
+   <zorder>label_2</zorder>
+   <zorder>sbStartY</zorder>
+   <zorder>sbEndY</zorder>
+   <zorder>btnConfirmSeg</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

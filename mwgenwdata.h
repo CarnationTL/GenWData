@@ -115,6 +115,139 @@ private:
     double _dutyc;
 };
 
+class CurveDataN
+{
+public:
+    CurveDataN(double x, double y, int segsize) {
+        xv.append(x);
+        yv.append(y);
+        _segsize = segsize;
+    }
+    ~CurveDataN() {
+
+    }
+    QVector <QPointF> getData() {
+        return ret;
+    }
+    void appendP(double x, double y) {
+        xv.append(x);
+        xv.append(y);
+        interval = double(xv.at (xv.size () - 1)) / double (xv.size () * _segsize);
+    }
+private:
+    QVector <QPointF> ret;
+    QVector <double> xv;
+    QVector <double> yv;
+    QVector <double> klst;
+    double interval;
+    int _segsize;
+
+    void GenPoints() {
+        int tsize = xv.size() * _segsize;
+        for(int i = 0; i < tsize; i++) {
+
+        }
+    }
+
+};
+
+
+class CusData: public QwtSyntheticPointData
+{
+public:
+    CusData(double x, double y, int tsize):
+        QwtSyntheticPointData(tsize) {
+        xv.append (x);
+        yv.append (y);
+        segsize = tsize;
+    }
+    virtual double y(double x) const {
+        int i = 0;
+        double k = 2;
+        if(x >= 0 && x <= 1) {
+            return 1 * x;
+        } else if(x > 1 && x <= 2) {
+            return -2 * x;
+        } else if(x > 2 && x <= 3) {
+            return  3 * x;
+        } else if(x > 3 && x <= 4) {
+            return 4 * x;
+        }
+
+#if 0
+
+        for(; i < xv.size (); i++) {
+            if(xv.size () <= 1) {
+                k = 0;
+                break;
+            }
+            if(x <= xv.at (xv.size () - 1) && x >= xv.at (xv.size () - 2)) {
+                double dy = yv.at (yv.size () - 1) - yv.at (yv.size () - 2);
+                double dx = xv.at (xv.size () - 1) - xv.at (xv.size () - 2);
+                if(dx != 0.0) {
+                    k = dy - dx;
+                    break;
+                } else {
+                    k = 0;
+                    break;
+                }
+            } else if(x >= xv.at (i) && x < xv.at (i + 1) ){
+                k = (yv.at (i + 1) - yv.at (i)) / (xv.at (i + 1) - xv.at (i));
+                break;
+            }
+        }
+        return k * x;
+#endif
+
+        //return k * x;
+    }
+
+    void appendP(double x, double y) {
+        xv.append (x);
+        yv.append (y);
+
+        klst.clear ();
+        GenKlist ();
+
+        this->setSize (yv.size () * segsize);
+    }
+private:
+    void GenKlist() {
+        for(int i = 0; i < xv.size (); i++) {
+            if(i == 0) {
+                double dx = xv.at (1) - xv.at (0);
+                if(dx != 0.0) {
+                    double k = (yv.at (1) - yv.at (0)) / dx;
+                    klst.append (k);
+                } else {
+                    return;
+                }
+            } else if ( i == xv.size () - 1) {
+                double dy = yv.at (yv.size () - 1) - yv.at (yv.size () - 2);
+                double dx = xv.at (xv.size () - 1) - xv.at (xv.size () - 2);
+                if(dx != 0.0) {
+                    double k = dy / dx;
+                    klst.append (k);
+                } else {
+                    return;
+                }
+            } else {
+                double dx = xv.at (i) - xv.at (i - 1);
+                double dy = yv.at (i) - yv.at (i - 1);
+                if(dx != 0.0) {
+                    double k = dy / dx;
+                    klst.append (k);
+                } else {
+                    return;
+                }
+            }
+        }
+    }
+    QVector <double> xv;
+    QVector <double> yv;
+    QVector <double> klst;
+    int segsize;
+};
 
 
 class MWGenWData : public QMainWindow
@@ -148,6 +281,16 @@ private slots:
 
     void on_btnLoad_clicked();
 
+    void on_sbstartTime_valueChanged(double arg1);
+
+    void on_sbEndTime_valueChanged(double arg1);
+
+    void on_sbStartY_valueChanged(double arg1);
+
+    void on_sbEndY_valueChanged(double arg1);
+
+    void on_btnConfirmSeg_clicked();
+
 private:
     Ui::MWGenWData *ui;
     int _dcnt;
@@ -169,6 +312,8 @@ private:
 
     QString consSdata(QString x, QString y);
     QStringList deconsSdata(QString xy);
+
 };
 
 #endif // MWGENWDATA_H
+
