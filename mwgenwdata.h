@@ -376,6 +376,8 @@ private:
     QwtPlotGrid *grid;
     void gridinit();
     double _lasttime;
+    QwtPlotMarker sm;
+    QwtPlotMarker em;
 };
 
 #endif // MWGENWDATA_H
