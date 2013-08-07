@@ -34,7 +34,8 @@ MWGenWData::MWGenWData(QWidget *parent) :
     _pcurve = new CurveDataN();
     //markerinit();
     gridinit ();
-    plot->setCanvasBackground (QColor("MidnightBlue"));
+    //plot->setCanvasBackground (QColor("MidnightBlue"));
+    plot->setCanvasBackground (QColor(0, 49, 114));
 }
 
 MWGenWData::~MWGenWData()
@@ -130,21 +131,25 @@ void MWGenWData::on_btnClose_clicked() {
 void MWGenWData::on_rbSin_clicked() {
     _type = SINE;
     toggleDutycHide (false);
+    doPlot (SINE);
 }
 
 void MWGenWData::on_rbSquare_clicked() {
     _type = SQU;
     toggleDutycHide (true);
+    doPlot (SQU);
 }
 
 void MWGenWData::on_rbSaw_clicked() {
     _type = SAW;
     toggleDutycHide (false);
+    doPlot (SAW);
 }
 
 void MWGenWData::on_rbTri_clicked() {
     _type = TRI;
     toggleDutycHide (false);
+    doPlot (TRI);
 }
 
 void MWGenWData::on_rbCus_clicked() {
@@ -167,7 +172,8 @@ void MWGenWData::doPlot(int t) {
 
     if(pc == NULL) {
         pc = new QwtPlotCurve("curve");
-        pc->setPen (QPen(Qt::red));
+        pc->setPen (QPen(Qt::green));
+        pc->setSymbol (new QwtSymbol(QwtSymbol::Triangle, Qt::yellow, QPen(Qt::blue), QSize(5, 5)));
     }
 
     int a, ti;
@@ -225,7 +231,8 @@ void MWGenWData::doPlot(QStringList strdata) {
         }
         if(pc == NULL) {
             pc = new QwtPlotCurve("curve");
-            pc->setPen (QPen(Qt::red));
+            pc->setPen (QPen(Qt::green));
+            pc->setSymbol (new QwtSymbol(QwtSymbol::Triangle, Qt::yellow, QPen(Qt::blue), QSize(5, 5)));
         }
 
         int a, ti;
@@ -278,7 +285,8 @@ void MWGenWData::doPlot(QStringList strdata) {
 void MWGenWData::doPlotCus() {
     if(pc == NULL) {
         pc = new QwtPlotCurve("curve");
-        pc->setPen (QPen(Qt::red));
+        pc->setPen (QPen(Qt::green));
+        pc->setSymbol (new QwtSymbol(QwtSymbol::Triangle, Qt::yellow, QPen(Qt::blue), QSize(5, 5)));
     }
     //QwtSetSeriesData *sdata;
     //找出最小bottom
@@ -589,24 +597,49 @@ void MWGenWData::on_btnConfirmSeg_clicked() {
     ui->sbstartTime->setMinimum (_lasttime);
 }
 
+
+
 void MWGenWData::on_lswcurv_itemClicked(QListWidgetItem *item) {
     qDebug () << item->text ();
-    //_sym.drawSymbol (NULL, _pcurve->getpts ().at (0));
-  //  pc->setSymbol (new QwtSymbol(QwtSymbol::Triangle, Qt::yellow, QPen(Qt::blue), QSize(5, 5)));
-    _sym.setPen (QPen(Qt::blue));
-    _sym.setStyle (QwtSymbol::Ellipse);
-    _sym.setSize (10, 10);
-    QPainter *ptr = dynamic_cast <QPainter*>(plot->paintEngine ()->painter ());
-    if(ptr != NULL) {
-        _sym.drawSymbol (ptr, _pcurve->getpts ().at (0));
-    }
+    QString t = item->text ().trimmed ();
+    QStringList list = t.split ("    ");
+    double x = list.at (0).split ("x:").at (1).trimmed ().toDouble ();
+    double y = list.at (1).split ("y:").at (1).trimmed ().toDouble ();
+    //起点
+    qDebug () << x << y;
+    QPointF point(x, y);
+    QPolygonF pts = _pcurve->findpoint (point);
 
+    qDebug () << pts;
+
+#if 0
+    //_sym.drawSymbol (NULL, _pcurve->getpts ().at (0));
+    //_sym.setPen (QPen(Qt::blue));
+    //_sym.setStyle (QwtSymbol::Ellipse);
+    //_sym.setSize (10, 10);
     //_sym.setPinPoint (_pcurve->getpts ().at (0));
     //pc->setSymbol (&_sym);
+#endif
     plot->replot ();
     //高亮
 }
 
 void MWGenWData::on_btncurDel_clicked() {
+    if(ui->lswcurv->count () > 0) {
+        QString t = ui->lswcurv->selectedItems ().at (0)->text ();
+        QStringList list = t.split ("    ");
+        double x = list.at (0).split ("x:").at (1).trimmed ().toDouble ();
+        double y = list.at (1).split ("y:").at (1).trimmed ().toDouble ();
+        QPointF p(x,y);
+        _pcurve->delSpcPts (p);
+        int row = ui->lswcurv->row (ui->lswcurv->selectedItems ().at (0));
+        ui->lswcurv->takeItem (0);
+        if(ui->lswcurv->count () != 0) {
+            doPlotCus ();
+        } else {
+            //d.....
+        }
+    }
+
 
 }

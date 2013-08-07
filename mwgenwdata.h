@@ -168,8 +168,41 @@ public:
         _points.clear ();
     }
 
-    void delSpcPts() {
+    void delSpcPts(QPointF p) {
+        for(int i = 0; i < _points.count (); i++) {
+            if(p == _points.at (i)) {
+                _points.remove (i);
+                break;
+            }
+        }
+    }
 
+    QPolygonF findpoint(QPointF point) {
+        int i = 0;
+        QPolygonF ret;
+        for(; i < _points.count (); i++) {
+            if(point == _points.at (i)) {
+                break;
+            }
+        }
+        //not the last one
+        if(i < _points.count ()) {
+            ret << _points.at (i);
+            if(i != _points.count () - 1) {
+                ret << _points.at (i + 1);
+            } else {
+                if(i == 0) {
+                    ret.clear ();
+                    ret << _points.at (0);
+                    ret << _points.at (0);
+                } else {
+                    ret.clear ();
+                    ret << _points.at (_points.count () - 2);
+                    ret << _points.at (_points.count () - 1);
+                }
+            }
+        }
+        return ret;
     }
 private:
     QVector <QPointF> ret;
@@ -337,7 +370,6 @@ private:
     QString consSdata(QString x, QString y);
     QStringList deconsSdata(QString xy);
     CurveDataN *_pcurve;
-    QwtPainter _qwtPainter;
     QwtSymbol _sym;
 //    QwtPlotMarker *_hmarker;
 //    void markerinit();
