@@ -31,6 +31,10 @@ MWGenWData::MWGenWData(QWidget *parent) :
     _amp = -1.0;
     _time = -1.0;
     _dutyc = -1.0;
+    _pcurve = new CurveDataN();
+    //markerinit();
+    gridinit ();
+    plot->setCanvasBackground (QColor("MidnightBlue"));
 }
 
 MWGenWData::~MWGenWData()
@@ -163,6 +167,7 @@ void MWGenWData::doPlot(int t) {
 
     if(pc == NULL) {
         pc = new QwtPlotCurve("curve");
+        pc->setPen (QPen(Qt::red));
     }
 
     int a, ti;
@@ -220,6 +225,7 @@ void MWGenWData::doPlot(QStringList strdata) {
         }
         if(pc == NULL) {
             pc = new QwtPlotCurve("curve");
+            pc->setPen (QPen(Qt::red));
         }
 
         int a, ti;
@@ -260,7 +266,7 @@ void MWGenWData::doPlot(QStringList strdata) {
 
         }
 #endif
-        //QwtSetSeriesData *sdata;
+            //QwtSetSeriesData *sdata;
 
         }
         pc->attach (plot);
@@ -272,19 +278,34 @@ void MWGenWData::doPlot(QStringList strdata) {
 void MWGenWData::doPlotCus() {
     if(pc == NULL) {
         pc = new QwtPlotCurve("curve");
+        pc->setPen (QPen(Qt::red));
     }
     //QwtSetSeriesData *sdata;
     //找出最小bottom
-    plot->setAxisScale (QwtPlot::xBottom, 0, _time);
-    plot->setAxisScale (QwtPlot::yLeft, -_amp, _amp);
-    CusData *cusdata = new CusData(0.0, 0.0, 100);
-    cusdata->appendP(4.0, 3.0);
-    cusdata->appendP(6.0, 10.0);
-    int sezie = cusdata->size ();
-    pc->setData (cusdata);
-    pc->attach (plot);
-    plot->show ();
-    plot->replot ();
+    //plot->setAxisScale (QwtPlot::xBottom, 0, _time);
+    //plot->setAxisScale (QwtPlot::yLeft, -_amp, _amp);
+    //    CusData *cusdata = new CusData(0.0, 0.0, 100);
+    //    cusdata->appendP(4.0, 3.0);
+    //    cusdata->appendP(6.0, 10.0);
+
+
+    if(_pcurve != NULL) {
+
+        //_pcurve->appendP (0.0, 4.4);
+        //_pcurve->appendP (0.5, 4.4);
+        //_pcurve->appendP (1.0, -4.4);
+        //_pcurve->appendP (2.0, -14.4);
+        //_pcurve->appendP (3.0, 24.4);
+        //_pcurve->appendP (4.0, -40.4);
+        //_pcurve->appendP (5.0, 54.4);
+
+        pc->setSamples( _pcurve->getpts ());
+        plot->setAxisScale (QwtPlot::xBottom, 0, _pcurve->getXRgn ());
+        plot->setAxisScale (QwtPlot::yLeft, -_pcurve->getYRgn (), _pcurve->getYRgn ());
+        pc->attach (plot);
+        plot->show ();
+        plot->replot ();
+    }
 }
 
 void MWGenWData::readSetting(QString fn) {
@@ -386,6 +407,26 @@ QStringList MWGenWData::deconsSdata(QString xy) {
     ret << strl.at (0).split ("(").at (1);
     ret << strl.at (1).split (")").at (0);
     return ret;
+}
+
+//void MWGenWData::markerinit() {
+//    _hmarker = new QwtPlotMarker();
+//    _hmarker->setLineStyle(QwtPlotMarker::HLine);
+//    _hmarker->setValue (0.0, 0.0);
+//    _hmarker->setLinePen(Qt::blue, Qt::DashDotLine);
+//    if(plot != NULL) {
+//        _hmarker->attach(plot);
+//    }
+//}
+
+void MWGenWData::gridinit() {
+    grid = new QwtPlotGrid();
+    grid->enableXMin (true);
+    grid->setMajorPen( Qt::white, 0, Qt::DotLine );
+    grid->setMinorPen( Qt::gray, 0 , Qt::DotLine );
+    if(plot != NULL) {
+        grid->attach (plot);
+    }
 }
 
 void MWGenWData::on_sbAMP_valueChanged(double arg1) {
@@ -512,13 +553,14 @@ void MWGenWData::on_btnLoad_clicked() {
 //value change 提供预览(部分预览)
 void MWGenWData::on_sbstartTime_valueChanged(double arg1) {
     if(_type == CUS) {
-        if(pc == NULL) {
-            pc = new QwtPlotCurve("curve");
+        if(arg1 != 0.0) {
+
         }
     }
 }
 
 void MWGenWData::on_sbEndTime_valueChanged(double arg1) {
+
 }
 
 void MWGenWData::on_sbStartY_valueChanged(double arg1) {
@@ -530,5 +572,41 @@ void MWGenWData::on_sbEndY_valueChanged(double arg1) {
 }
 
 void MWGenWData::on_btnConfirmSeg_clicked() {
+    double xs = ui->sbstartTime->value ();
+    double ys = ui->sbStartY->value ();
+
+    double xe = ui->sbEndTime->value ();
+    double ye = ui->sbEndY->value ();
+
+    if(_pcurve != NULL) {
+        _pcurve->appendP (xs, ys);
+        QString ptsStr = QString("x: ") + QString::number (xs, 'g', 3) +
+                 QString("    ") + QString("y: ") + QString::number (ys, 'g', 3);
+        ui->lswcurv->addItem (ptsStr);
+        doPlotCus();
+    }
+    _lasttime = ui->sbstartTime->value ();
+    ui->sbstartTime->setMinimum (_lasttime);
+}
+
+void MWGenWData::on_lswcurv_itemClicked(QListWidgetItem *item) {
+    qDebug () << item->text ();
+    //_sym.drawSymbol (NULL, _pcurve->getpts ().at (0));
+  //  pc->setSymbol (new QwtSymbol(QwtSymbol::Triangle, Qt::yellow, QPen(Qt::blue), QSize(5, 5)));
+    _sym.setPen (QPen(Qt::blue));
+    _sym.setStyle (QwtSymbol::Ellipse);
+    _sym.setSize (10, 10);
+    QPainter *ptr = dynamic_cast <QPainter*>(plot->paintEngine ()->painter ());
+    if(ptr != NULL) {
+        _sym.drawSymbol (ptr, _pcurve->getpts ().at (0));
+    }
+
+    //_sym.setPinPoint (_pcurve->getpts ().at (0));
+    //pc->setSymbol (&_sym);
+    plot->replot ();
+    //高亮
+}
+
+void MWGenWData::on_btncurDel_clicked() {
 
 }

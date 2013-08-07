@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>817</width>
-    <height>713</height>
+    <width>830</width>
+    <height>778</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -355,14 +355,37 @@
    <widget class="QPushButton" name="btnConfirmSeg">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>400</x>
       <y>520</y>
       <width>94</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>确认线段</string>
+     <string>添加线段</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="lswcurv">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>520</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btncurDel">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>630</y>
+      <width>94</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>删除线段</string>
     </property>
    </widget>
    <zorder>gbPara</zorder>
@@ -380,13 +403,15 @@
    <zorder>sbStartY</zorder>
    <zorder>sbEndY</zorder>
    <zorder>btnConfirmSeg</zorder>
+   <zorder>lswcurv</zorder>
+   <zorder>btncurDel</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>817</width>
+     <width>830</width>
      <height>28</height>
     </rect>
    </property>

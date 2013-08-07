@@ -14,6 +14,11 @@
 #include <Qwt/qwt_point_data.h>
 #include <Qwt/qwt_series_data.h>
 #include <Qwt/qwt_plot.h>
+#include <Qwt/qwt_symbol.h>
+#include <Qwt/qwt_plot_marker.h>
+#include <Qwt/qwt_painter.h>
+#include <Qwt/qwt_plot_grid.h>
+#include <QListWidgetItem>
 
 #define PI 3.1415926
 namespace Ui {
@@ -118,137 +123,152 @@ private:
 class CurveDataN
 {
 public:
-    CurveDataN(double x, double y, int segsize) {
-        xv.append(x);
-        yv.append(y);
-        _segsize = segsize;
+    CurveDataN() {
     }
     ~CurveDataN() {
 
     }
-    QVector <QPointF> getData() {
-        return ret;
-    }
     void appendP(double x, double y) {
-        xv.append(x);
-        xv.append(y);
-        interval = double(xv.at (xv.size () - 1)) / double (xv.size () * _segsize);
+        _points << QPointF(x, y);
+    }
+    QPolygonF getpts() {
+        return _points;
+    }
+    double getYRgn() {
+        int len = _points.count ();
+        double ymax = _points.at (0).y ();
+        double ymin = _points.at (0).y ();
+        for(int i = 1; i < len; i++) {
+            if(ymax <= _points.at (i).y ()) {
+                ymax = _points.at (i).y ();
+            }
+            if(ymin >= _points.at (i).y ()) {
+                ymin = _points.at (i).y ();
+            }
+        }
+        ymax = fabs (ymax);
+        ymin = fabs (ymin);
+        if(ymax > ymin) {
+            return ymax;
+        } else {
+            return ymin;
+        }
+    }
+    double getXRgn() {
+        int len = _points.count ();
+        double xmax = _points.at (0).x ();
+        for(int i = 0; i < len; i++) {
+            if(xmax <= _points.at (i).x ()) {
+                xmax = _points.at (i).x ();
+            }
+        }
+        return xmax;
+    }
+    void clear() {
+        _points.clear ();
+    }
+
+    void delSpcPts() {
+
     }
 private:
     QVector <QPointF> ret;
-    QVector <double> xv;
-    QVector <double> yv;
-    QVector <double> klst;
-    double interval;
-    int _segsize;
-
-    void GenPoints() {
-        int tsize = xv.size() * _segsize;
-        for(int i = 0; i < tsize; i++) {
-
-        }
-    }
-
+    QPolygonF _points;
 };
 
 
-class CusData: public QwtSyntheticPointData
-{
-public:
-    CusData(double x, double y, int tsize):
-        QwtSyntheticPointData(tsize) {
-        xv.append (x);
-        yv.append (y);
-        segsize = tsize;
-    }
-    virtual double y(double x) const {
-        int i = 0;
-        double k = 2;
-        if(x >= 0 && x <= 1) {
-            return 1 * x;
-        } else if(x > 1 && x <= 2) {
-            return -2 * x;
-        } else if(x > 2 && x <= 3) {
-            return  3 * x;
-        } else if(x > 3 && x <= 4) {
-            return 4 * x;
-        }
-
-#if 0
-
-        for(; i < xv.size (); i++) {
-            if(xv.size () <= 1) {
-                k = 0;
-                break;
-            }
-            if(x <= xv.at (xv.size () - 1) && x >= xv.at (xv.size () - 2)) {
-                double dy = yv.at (yv.size () - 1) - yv.at (yv.size () - 2);
-                double dx = xv.at (xv.size () - 1) - xv.at (xv.size () - 2);
-                if(dx != 0.0) {
-                    k = dy - dx;
-                    break;
-                } else {
-                    k = 0;
-                    break;
-                }
-            } else if(x >= xv.at (i) && x < xv.at (i + 1) ){
-                k = (yv.at (i + 1) - yv.at (i)) / (xv.at (i + 1) - xv.at (i));
-                break;
-            }
-        }
-        return k * x;
-#endif
-
-        //return k * x;
-    }
-
-    void appendP(double x, double y) {
-        xv.append (x);
-        yv.append (y);
-
-        klst.clear ();
-        GenKlist ();
-
-        this->setSize (yv.size () * segsize);
-    }
-private:
-    void GenKlist() {
-        for(int i = 0; i < xv.size (); i++) {
-            if(i == 0) {
-                double dx = xv.at (1) - xv.at (0);
-                if(dx != 0.0) {
-                    double k = (yv.at (1) - yv.at (0)) / dx;
-                    klst.append (k);
-                } else {
-                    return;
-                }
-            } else if ( i == xv.size () - 1) {
-                double dy = yv.at (yv.size () - 1) - yv.at (yv.size () - 2);
-                double dx = xv.at (xv.size () - 1) - xv.at (xv.size () - 2);
-                if(dx != 0.0) {
-                    double k = dy / dx;
-                    klst.append (k);
-                } else {
-                    return;
-                }
-            } else {
-                double dx = xv.at (i) - xv.at (i - 1);
-                double dy = yv.at (i) - yv.at (i - 1);
-                if(dx != 0.0) {
-                    double k = dy / dx;
-                    klst.append (k);
-                } else {
-                    return;
-                }
-            }
-        }
-    }
-    QVector <double> xv;
-    QVector <double> yv;
-    QVector <double> klst;
-    int segsize;
-};
-
+//class CusData: public QwtSyntheticPointData
+//{
+//public:
+//    CusData(double x, double y, int tsize):
+//        QwtSyntheticPointData(tsize) {
+//        xv.append (x);
+//        yv.append (y);
+//    }
+//    virtual double y(double x) const {
+//        int i = 0;
+//        double k = 2;
+//        if(x >= 0 && x <= 1) {
+//            return 1 * x;
+//        } else if(x > 1 && x <= 2) {
+//            return -2 * x;
+//        } else if(x > 2 && x <= 3) {
+//            return  3 * x;
+//        } else if(x > 3 && x <= 4) {
+//            return 4 * x;
+//        }
+//
+//#if 0
+//
+//        for(; i < xv.size (); i++) {
+//            if(xv.size () <= 1) {
+//                k = 0;
+//                break;
+//            }
+//            if(x <= xv.at (xv.size () - 1) && x >= xv.at (xv.size () - 2)) {
+//                double dy = yv.at (yv.size () - 1) - yv.at (yv.size () - 2);
+//                double dx = xv.at (xv.size () - 1) - xv.at (xv.size () - 2);
+//                if(dx != 0.0) {
+//                    k = dy - dx;
+//                    break;
+//                } else {
+//                    k = 0;
+//                    break;
+//                }
+//            } else if(x >= xv.at (i) && x < xv.at (i + 1) ){
+//                k = (yv.at (i + 1) - yv.at (i)) / (xv.at (i + 1) - xv.at (i));
+//                break;
+//            }
+//        }
+//        return k * x;
+//#endif
+//
+//        //return k * x;
+//    }
+//
+//    void appendP(double x, double y) {
+//        xv.append (x);
+//        yv.append (y);
+//
+//
+//        this->setSize (yv.size () * segsize);
+//    }
+//private:
+//    void GenKlist() {
+//        for(int i = 0; i < xv.size (); i++) {
+//            if(i == 0) {
+//                double dx = xv.at (1) - xv.at (0);
+//                if(dx != 0.0) {
+//                    double k = (yv.at (1) - yv.at (0)) / dx;
+//                    klst.append (k);
+//                } else {
+//                    return;
+//                }
+//            } else if ( i == xv.size () - 1) {
+//                double dy = yv.at (yv.size () - 1) - yv.at (yv.size () - 2);
+//                double dx = xv.at (xv.size () - 1) - xv.at (xv.size () - 2);
+//                if(dx != 0.0) {
+//                    double k = dy / dx;
+//                    klst.append (k);
+//                } else {
+//                    return;
+//                }
+//            } else {
+//                double dx = xv.at (i) - xv.at (i - 1);
+//                double dy = yv.at (i) - yv.at (i - 1);
+//                if(dx != 0.0) {
+//                    double k = dy / dx;
+//                    klst.append (k);
+//                } else {
+//                    return;
+//                }
+//            }
+//        }
+//    }
+//    QVector <double> xv;
+//    QVector <double> yv;
+//};
+//
 
 class MWGenWData : public QMainWindow
 {
@@ -291,6 +311,10 @@ private slots:
 
     void on_btnConfirmSeg_clicked();
 
+    void on_lswcurv_itemClicked(QListWidgetItem *item);
+
+    void on_btncurDel_clicked();
+
 private:
     Ui::MWGenWData *ui;
     int _dcnt;
@@ -312,7 +336,14 @@ private:
 
     QString consSdata(QString x, QString y);
     QStringList deconsSdata(QString xy);
-
+    CurveDataN *_pcurve;
+    QwtPainter _qwtPainter;
+    QwtSymbol _sym;
+//    QwtPlotMarker *_hmarker;
+//    void markerinit();
+    QwtPlotGrid *grid;
+    void gridinit();
+    double _lasttime;
 };
 
 #endif // MWGENWDATA_H
