@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>830</width>
-    <height>778</height>
+    <width>872</width>
+    <height>692</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>10</y>
       <width>171</width>
       <height>241</height>
      </rect>
@@ -104,9 +104,9 @@
    <widget class="QwtPlot" name="qwtPlot">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>180</x>
       <y>20</y>
-      <width>571</width>
+      <width>551</width>
       <height>421</height>
      </rect>
     </property>
@@ -115,7 +115,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>270</y>
+      <y>250</y>
       <width>171</width>
       <height>221</height>
      </rect>
@@ -124,7 +124,7 @@
      <string notr="true"/>
     </property>
     <property name="title">
-     <string>参数设置</string>
+     <string>波形参数</string>
     </property>
     <widget class="QLabel" name="lbFEQ">
      <property name="geometry">
@@ -212,22 +212,22 @@
    <widget class="QPushButton" name="btnGenWData">
     <property name="geometry">
      <rect>
-      <x>390</x>
-      <y>460</y>
-      <width>111</width>
+      <x>750</x>
+      <y>20</y>
+      <width>100</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string>保存数据文件</string>
+     <string>保存数据</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btnClose">
     <property name="geometry">
      <rect>
-      <x>660</x>
-      <y>460</y>
-      <width>94</width>
+      <x>750</x>
+      <y>120</y>
+      <width>100</width>
       <height>28</height>
      </rect>
     </property>
@@ -238,155 +238,181 @@
    <widget class="QPushButton" name="btnLoad">
     <property name="geometry">
      <rect>
-      <x>520</x>
-      <y>460</y>
-      <width>111</width>
+      <x>750</x>
+      <y>70</y>
+      <width>100</width>
       <height>28</height>
      </rect>
     </property>
     <property name="text">
-     <string> 载入数据文件</string>
+     <string> 载入数据</string>
     </property>
    </widget>
-   <widget class="QLabel" name="lblStartTime">
+   <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>530</y>
-      <width>71</width>
-      <height>20</height>
+      <y>470</y>
+      <width>721</width>
+      <height>181</height>
      </rect>
     </property>
-    <property name="text">
-     <string>StartTime:</string>
+    <property name="title">
+     <string>自定义参数</string>
     </property>
-   </widget>
-   <widget class="QDoubleSpinBox" name="sbstartTime">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>520</y>
-      <width>91</width>
-      <height>30</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="lblEndTime">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>570</y>
-      <width>62</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>EndTime:</string>
-    </property>
-   </widget>
-   <widget class="QDoubleSpinBox" name="sbEndTime">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>560</y>
-      <width>91</width>
-      <height>30</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>530</y>
-      <width>62</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>StartY:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>220</x>
-      <y>570</y>
-      <width>62</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>EndY:</string>
-    </property>
-   </widget>
-   <widget class="QDoubleSpinBox" name="sbStartY">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>520</y>
-      <width>81</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="minimum">
-     <double>-1000.000000000000000</double>
-    </property>
-    <property name="maximum">
-     <double>1000.000000000000000</double>
-    </property>
-   </widget>
-   <widget class="QDoubleSpinBox" name="sbEndY">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>560</y>
-      <width>81</width>
-      <height>30</height>
-     </rect>
-    </property>
-    <property name="minimum">
-     <double>-1000.000000000000000</double>
-    </property>
-    <property name="maximum">
-     <double>1000.000000000000000</double>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnConfirmSeg">
-    <property name="geometry">
-     <rect>
-      <x>400</x>
-      <y>520</y>
-      <width>94</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>添加线段</string>
-    </property>
-   </widget>
-   <widget class="QListWidget" name="lswcurv">
-    <property name="geometry">
-     <rect>
-      <x>520</x>
-      <y>520</y>
-      <width>256</width>
-      <height>192</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btncurDel">
-    <property name="geometry">
-     <rect>
-      <x>400</x>
-      <y>630</y>
-      <width>94</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>删除线段</string>
-    </property>
+    <widget class="QDoubleSpinBox" name="sbstartTime">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>25</y>
+       <width>91</width>
+       <height>30</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblStartTime">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>71</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>StartTime:</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="sbEndTime">
+     <property name="geometry">
+      <rect>
+       <x>80</x>
+       <y>75</y>
+       <width>91</width>
+       <height>30</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblEndTime">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>62</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>EndTime:</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="sbStartY">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>25</y>
+       <width>81</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <double>-1000.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>1000.000000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>30</y>
+       <width>62</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>StartY:</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="sbEndY">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>75</y>
+       <width>81</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <double>-1000.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>1000.000000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>80</y>
+       <width>62</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>EndY:</string>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="lswcurv">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>25</y>
+       <width>311</width>
+       <height>111</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnConfirmSeg">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>115</y>
+       <width>94</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>添加段</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btncurDel">
+     <property name="geometry">
+      <rect>
+       <x>600</x>
+       <y>140</y>
+       <width>94</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>删除段</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>-5</y>
+       <width>62</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string> 已添加:</string>
+     </property>
+    </widget>
    </widget>
    <zorder>gbPara</zorder>
    <zorder>gbWave</zorder>
@@ -394,24 +420,14 @@
    <zorder>btnGenWData</zorder>
    <zorder>btnClose</zorder>
    <zorder>btnLoad</zorder>
-   <zorder>lblStartTime</zorder>
-   <zorder>sbstartTime</zorder>
-   <zorder>lblEndTime</zorder>
-   <zorder>sbEndTime</zorder>
-   <zorder>label</zorder>
-   <zorder>label_2</zorder>
-   <zorder>sbStartY</zorder>
-   <zorder>sbEndY</zorder>
-   <zorder>btnConfirmSeg</zorder>
-   <zorder>lswcurv</zorder>
-   <zorder>btncurDel</zorder>
+   <zorder>groupBox</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>830</width>
+     <width>872</width>
      <height>28</height>
     </rect>
    </property>

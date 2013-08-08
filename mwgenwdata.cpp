@@ -14,6 +14,8 @@
 #define S_ITEM_TYPE "type"
 
 
+bool firstFlag = false;
+
 MWGenWData::MWGenWData(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MWGenWData)
@@ -457,6 +459,8 @@ void MWGenWData::initSwitchPara(bool flag) {
 
     ui->btnConfirmSeg->setEnabled (flag);
     ui->btncurDel->setEnabled (flag);
+
+    ui->lswcurv->setEnabled(flag);
 }
 
 
@@ -633,21 +637,38 @@ void MWGenWData::on_btnConfirmSeg_clicked() {
 
 
     if(_pcurve != NULL) {
-        _pcurve->appendP (xs, ys);
-        QString ptsStr = QString("x: ") + QString::number (xs, 'g', 3) +
-                 QString("    ") + QString("y: ") + QString::number (ys, 'g', 3);
-        ui->lswcurv->addItem (ptsStr);
 
-        _pcurve->appendP (xe, ye);
-        QString ptsEnd = QString("x: ") + QString::number (xe, 'g', 3) +
-                 QString("    ") + QString("y: ") + QString::number (ye, 'g', 3);
-
-        ui->lswcurv->addItem (ptsEnd);
-        doPlotCus();
+        if(firstFlag == false) {
+            //first
+            _pcurve->appendP (xs, ys);
+            QString ptsStr = QString("x: ") + QString::number (xs, 'g', 3) +
+                    QString("    ") + QString("y: ") + QString::number (ys, 'g', 3);
+            ui->lswcurv->addItem (ptsStr);
+            _pcurve->appendP (xe, ye);
+            QString ptsEnd = QString("x: ") + QString::number (xe, 'g', 3) +
+                    QString("    ") + QString("y: ") + QString::number (ye, 'g', 3);
+            ui->lswcurv->addItem (ptsEnd);
+            doPlotCus();
+            ui->sbStartY->setEnabled (false);
+            ui->sbstartTime->setEnabled (false);
+            ui->sbStartY->setValue (ye);
+            ui->sbstartTime->setValue (xe);
+            ui->sbEndTime->setMinimum (xe);
+        } else {
+            _pcurve->appendP (xe, ye);
+            QString ptsEnd = QString("x: ") + QString::number (xe, 'g', 3) +
+                    QString("    ") + QString("y: ") + QString::number (ye, 'g', 3);
+            ui->lswcurv->addItem (ptsEnd);
+            doPlotCus();
+            ui->sbStartY->setValue (ye);
+            ui->sbstartTime->setValue (xe);
+            ui->sbEndTime->setMinimum (xe);
+        }
+        firstFlag = true;
     }
 
     _lasttime = ui->sbstartTime->value ();
-    ui->sbstartTime->setMinimum (_lasttime);
+   // ui->sbstartTime->setMinimum (_lasttime);
 
 }
 
@@ -662,11 +683,6 @@ void MWGenWData::on_lswcurv_itemClicked(QListWidgetItem *item) {
     //起点
     qDebug () << x << y;
     QPointF point(x, y);
-    QPolygonF pts = _pcurve->findpoint (point);
-
-    sm.setValue(pts.at (0).x (), pts.at (0).y ());
-    sm.setLineStyle (QwtPlotMarker::VLine);
-    sm.setLinePen (Qt::red, 1.5, Qt::DashDotLine);
     sm.setLabelAlignment (Qt::AlignRight | Qt::AlignTop);
 
     QwtText txt(QString("time_s: ") + QString::number (pts.at (0).x (), 'g', 3) +
