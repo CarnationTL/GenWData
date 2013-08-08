@@ -17,7 +17,7 @@
    <widget class="QGroupBox" name="gbWave">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>10</y>
       <width>171</width>
       <height>241</height>
