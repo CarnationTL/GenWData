@@ -683,6 +683,11 @@ void MWGenWData::on_lswcurv_itemClicked(QListWidgetItem *item) {
     //起点
     qDebug () << x << y;
     QPointF point(x, y);
+    QPolygonF pts = _pcurve->findpoint (point);
+
+    sm.setValue(pts.at (0).x (), pts.at (0).y ());
+    sm.setLineStyle (QwtPlotMarker::VLine);
+    sm.setLinePen (Qt::red, 1.5, Qt::DashDotLine);
     sm.setLabelAlignment (Qt::AlignRight | Qt::AlignTop);
 
     QwtText txt(QString("time_s: ") + QString::number (pts.at (0).x (), 'g', 3) +
