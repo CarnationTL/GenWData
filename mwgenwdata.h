@@ -378,6 +378,8 @@ private:
     double _lasttime;
     QwtPlotMarker sm;
     QwtPlotMarker em;
+    void initSwitchPara(bool flag);
+    void switchWvRbs(int type, bool flag);
 };
 
 #endif // MWGENWDATA_H

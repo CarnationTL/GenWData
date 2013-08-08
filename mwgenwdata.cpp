@@ -36,6 +36,7 @@ MWGenWData::MWGenWData(QWidget *parent) :
     gridinit ();
     //plot->setCanvasBackground (QColor("MidnightBlue"));
     plot->setCanvasBackground (QColor(0, 49, 114));
+    initSwitchPara (false);
 }
 
 MWGenWData::~MWGenWData()
@@ -101,7 +102,6 @@ void MWGenWData::on_btnGenWData_clicked() {
    // set.setValue(S_ITEM_DATA_Y, sly);
     set.setValue (S_ITEM_DATA, txy);
 
-
 #if 0
     QString aa("(12.0,13.0)");
     qDebug () << deconsSdata (aa);
@@ -131,29 +131,40 @@ void MWGenWData::on_btnClose_clicked() {
 void MWGenWData::on_rbSin_clicked() {
     _type = SINE;
     toggleDutycHide (false);
+    initSwitchPara(false);
+    switchWvRbs (SINE, true);
     doPlot (SINE);
 }
 
 void MWGenWData::on_rbSquare_clicked() {
     _type = SQU;
     toggleDutycHide (true);
+    initSwitchPara(false);
+    switchWvRbs (SQU, true);
     doPlot (SQU);
 }
 
 void MWGenWData::on_rbSaw_clicked() {
     _type = SAW;
     toggleDutycHide (false);
+    initSwitchPara(false);
+    switchWvRbs (SAW, true);
     doPlot (SAW);
 }
 
 void MWGenWData::on_rbTri_clicked() {
     _type = TRI;
     toggleDutycHide (false);
+    initSwitchPara(false);
+    switchWvRbs (TRI, true);
     doPlot (TRI);
 }
 
 void MWGenWData::on_rbCus_clicked() {
     _type = CUS;
+    initSwitchPara(true);
+    toggleDutycHide(false);
+    switchWvRbs (SQU, false);
 }
 
 void MWGenWData::toggleDutycHide(bool f) {
@@ -437,6 +448,26 @@ void MWGenWData::gridinit() {
     }
 }
 
+void MWGenWData::initSwitchPara(bool flag) {
+   //disable cus
+    ui->sbstartTime->setEnabled (flag);
+    ui->sbEndTime->setEnabled (flag);
+    ui->sbStartY->setEnabled (flag);
+    ui->sbEndY->setEnabled (flag);
+
+    ui->btnConfirmSeg->setEnabled (flag);
+    ui->btncurDel->setEnabled (flag);
+}
+
+
+void MWGenWData::switchWvRbs(int type, bool flag) {
+    ui->sbAMP->setEnabled (flag);
+    ui->sbTIME->setEnabled (flag);
+    if(type == SQU) {
+        ui->sbDUTY->setEnabled (flag);
+    }
+}
+
 void MWGenWData::on_sbAMP_valueChanged(double arg1) {
     if(arg1 >= 0.0) {
         _amp = arg1;
@@ -529,18 +560,28 @@ void MWGenWData::on_btnLoad_clicked() {
     if(_t == QString("SINE")) {
         _type = SINE;
         setrbCheck (SINE);
+        initSwitchPara (false);
+        switchWvRbs (SINE, true);
     } else if(_t == QString("TRI")) {
         _type = TRI;
         setrbCheck (TRI);
+        initSwitchPara (false);
+        switchWvRbs(TRI, true);
     } else if(_t == QString("SAW")) {
         _type = SAW;
         setrbCheck (SAW);
+        initSwitchPara(false);
+        switchWvRbs(SAW, true);
     } else if(_t == QString("SQU")) {
         _type = SQU;
         setrbCheck (SQU);
+        initSwitchPara(false);
+        switchWvRbs(SQU, true);
     } else if(_t == QString("CUS")) {
         _type = CUS;
         setrbCheck (CUS);
+        initSwitchPara(true);
+        switchWvRbs(SQU, false);
     }
 
     _amp = set.value (S_ITEM_AMP, 0.0).toDouble ();
@@ -579,22 +620,35 @@ void MWGenWData::on_sbEndY_valueChanged(double arg1) {
 
 }
 
+
+//确定按钮
 void MWGenWData::on_btnConfirmSeg_clicked() {
+
     double xs = ui->sbstartTime->value ();
     double ys = ui->sbStartY->value ();
 
     double xe = ui->sbEndTime->value ();
     double ye = ui->sbEndY->value ();
 
+
+
     if(_pcurve != NULL) {
         _pcurve->appendP (xs, ys);
         QString ptsStr = QString("x: ") + QString::number (xs, 'g', 3) +
                  QString("    ") + QString("y: ") + QString::number (ys, 'g', 3);
         ui->lswcurv->addItem (ptsStr);
+
+        _pcurve->appendP (xe, ye);
+        QString ptsEnd = QString("x: ") + QString::number (xe, 'g', 3) +
+                 QString("    ") + QString("y: ") + QString::number (ye, 'g', 3);
+
+        ui->lswcurv->addItem (ptsEnd);
         doPlotCus();
     }
+
     _lasttime = ui->sbstartTime->value ();
     ui->sbstartTime->setMinimum (_lasttime);
+
 }
 
 
@@ -618,8 +672,6 @@ void MWGenWData::on_lswcurv_itemClicked(QListWidgetItem *item) {
     QwtText txt(QString("time_s: ") + QString::number (pts.at (0).x (), 'g', 3) +
                 QString("----") + QString("y: ") + QString::number (pts.at (0).y (), 'g',3));
     sm.setLabel (txt);
-
-
     em.setValue(pts.at (1).x (), pts.at (1).y ());
 
     QwtText txt1(QString("time_e: ") + QString::number (pts.at (1).x (), 'g', 3) +
@@ -657,9 +709,7 @@ void MWGenWData::on_btncurDel_clicked() {
         if(ui->lswcurv->count () != 0) {
             doPlotCus ();
         } else {
-            //d.....
+
         }
     }
-
-
 }
