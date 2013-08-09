@@ -26,13 +26,15 @@ MWGenWData::MWGenWData(QWidget *parent) :
 
     plot = ui->qwtPlot;
     plot->setAutoDelete (true);
+    plot->setAxisScale(QwtPlot::xBottom, 0, 10.0);
+    plot->setAxisScale(QwtPlot::yLeft, -10.0, 10.0);
     ui->rbSin->setChecked (true);
     _type = SINE;
     toggleDutycHide (false);
     pc = NULL;
-    _amp = -1.0;
-    _time = -1.0;
-    _dutyc = -1.0;
+    _amp = 0.0;
+    _time = 0.0;
+    _dutyc = 0.0;
     _pcurve = new CurveDataN();
     //markerinit();
     gridinit ();
@@ -186,7 +188,8 @@ void MWGenWData::doPlot(int t) {
     if(pc == NULL) {
         pc = new QwtPlotCurve("curve");
         pc->setPen (QPen(Qt::green));
-        pc->setSymbol (new QwtSymbol(QwtSymbol::Triangle, Qt::yellow, QPen(Qt::blue), QSize(5, 5)));
+        //pc->setSymbol (new QwtSymbol(QwtSymbol::Triangle, Qt::yellow, QPen(Qt::blue), QSize(5, 5)));
+        pc->setSymbol(NULL);
     }
 
     int a, ti;
@@ -199,8 +202,19 @@ void MWGenWData::doPlot(int t) {
     else
         ti = _time;
 
-    plot->setAxisScale (QwtPlot::xBottom, 0, ti);
-    plot->setAxisScale (QwtPlot::yLeft, -a, a);
+    if(a == 0.0) {
+        plot->setAxisScale(QwtPlot::yLeft, -10.0, 10.0);
+    } else {
+        plot->setAxisScale (QwtPlot::yLeft, -a, a);
+    }
+
+    if(ti == 0.0) {
+        plot->setAxisScale(QwtPlot::xBottom, 0, 10.0);
+    } else {
+        plot->setAxisScale (QwtPlot::xBottom, 0, ti);
+    }
+
+
 
    // plot->setAxisScale (QwtPlot::xBottom, 0.0, 10.0);
    // plot->setAxisScale (QwtPlot::yLeft, -1.0, 1.0);
@@ -208,17 +222,17 @@ void MWGenWData::doPlot(int t) {
     if(pc != NULL) {
         switch (t) {
         case SINE:
-            pc->setData (new SinusData(a));
+            pc->setData (new SinusData(a, ti));
             break;
         case TRI:
-            pc->setData (new TriData(a));
+            pc->setData (new TriData(a, ti));
             break;
         case SAW:
-            pc->setData (new SawData(a));
+            pc->setData (new SawData(a, ti));
             break;
         case SQU:
             if(_dutyc)
-            pc->setData (new SquData(a, _dutyc));
+            pc->setData (new SquData(a, _dutyc, ti));
             break;
         case CUS:
             break;
@@ -226,7 +240,6 @@ void MWGenWData::doPlot(int t) {
             break;
         }
         //QwtSetSeriesData *sdata;
-
     }
     pc->attach (plot);
     plot->show ();
@@ -245,7 +258,12 @@ void MWGenWData::doPlot(QStringList strdata) {
         if(pc == NULL) {
             pc = new QwtPlotCurve("curve");
             pc->setPen (QPen(Qt::green));
-            pc->setSymbol (new QwtSymbol(QwtSymbol::Triangle, Qt::yellow, QPen(Qt::blue), QSize(5, 5)));
+            if(_type == CUS) {
+                pc->setSymbol (new QwtSymbol(QwtSymbol::Triangle, Qt::yellow, QPen(Qt::blue), QSize(5, 5)));
+            } else {
+                pc->setSymbol (NULL);
+            }
+
         }
 
         int a, ti;
@@ -258,8 +276,19 @@ void MWGenWData::doPlot(QStringList strdata) {
         else
             ti = _time;
 
-        plot->setAxisScale (QwtPlot::xBottom, 0, ti);
-        plot->setAxisScale (QwtPlot::yLeft, -a, a);
+        if(a == 0.0) {
+            plot->setAxisScale(QwtPlot::yLeft, -10.0, 10.0);
+        } else {
+            plot->setAxisScale (QwtPlot::yLeft, -a, a);
+        }
+
+        if(ti == 0.0) {
+            plot->setAxisScale(QwtPlot::xBottom, 0, 10.0);
+        } else {
+            plot->setAxisScale (QwtPlot::xBottom, 0, ti);
+        }
+
+
 
         if(pc != NULL) {
             pc->setSamples (vec);
@@ -308,7 +337,6 @@ void MWGenWData::doPlotCus() {
     //    CusData *cusdata = new CusData(0.0, 0.0, 100);
     //    cusdata->appendP(4.0, 3.0);
     //    cusdata->appendP(6.0, 10.0);
-
 
     if(_pcurve != NULL) {
 

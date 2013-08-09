@@ -29,33 +29,34 @@ class MWGenWData;
 class SinusData: public QwtSyntheticPointData
 {
 public:
-    SinusData(double amp):
+    SinusData(double amp, double time):
         QwtSyntheticPointData( 100 )
     {
         _amp = amp;
+        _feq = 1.0 / time;
     }
     virtual double y( double x ) const
     {
-        double frequency = 1;
-		return _amp * sin(PI / 180.0 * (360.0 * frequency * x)); 
+        return _amp * sin(PI / 180.0 * (360.0 * _feq * x));
         //return (_amp * qSin( x ));
     }
 private:
     double _amp;
+    double _feq;
 };
 
 
 class TriData: public QwtSyntheticPointData
 {
 public:
-    TriData(double amp):
+    TriData(double amp, double time):
         QwtSyntheticPointData( 100 )
     {
         _amp = amp;
+        _feq = 1.0 / time;
     }
     virtual double y( double x ) const {
-        double frequency = 1;
-		double	phase_i = fmod((360.0 * frequency * x), 360.0);
+        double	phase_i = fmod((360.0 * _feq * x), 360.0);
 		double	percentPeriod = phase_i / 360.0;
 		double	dat = _amp * 4.0 * percentPeriod;
 
@@ -74,22 +75,23 @@ public:
     }
 private:
     double _amp;
+    double _feq;
 };
 
 class SawData: public QwtSyntheticPointData
 {
 public:
-    SawData(double amp):
+    SawData(double amp, double time):
         QwtSyntheticPointData( 100 )
     {
         _amp = amp;
+        _feq = 1.0 / time;
     }
     virtual double y( double x ) const {
 #if 1
         double t = 0;
         double *phase = &t;
-        double frequency = 1;
-        double	phase_i = fmod((*phase + 360.0 * frequency * x), 360.0);
+        double	phase_i = fmod((*phase + 360.0 * _feq * x), 360.0);
 		double	percentPeriod = phase_i / 360.0;
         double	dat = _amp * 2.0 * percentPeriod;
         return (percentPeriod <= 0.5 ? dat : dat - 2.0 * _amp);
@@ -97,20 +99,21 @@ public:
     }
 private:
     double _amp;
+    double _feq;
 };
 
 
 class SquData: public QwtSyntheticPointData
 {
 public:
-    SquData(double amp, double duc):
+    SquData(double amp, double duc, double time):
         QwtSyntheticPointData( 100 ) {
         _amp = amp;
         _dutyc = duc;
+        _feq = 1.0 / time;
     }
     virtual double y( double x ) const {
-        double frequency = 1;
-        double	phase_i = fmod((360.0 * frequency * x), 360.0);
+        double	phase_i = fmod((360.0 * _feq * x), 360.0);
         //set the dutyCycle of Square wave
         return (phase_i / 360.0 <= _dutyc / 100.0 ? _amp: -_amp);
        // *phase = fmod(*phase + frequency * 360.0 * numElements, 360.0);
@@ -118,6 +121,7 @@ public:
 private:
     double _amp;
     double _dutyc;
+    double _feq;
 };
 
 class CurveDataN
