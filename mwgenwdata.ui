@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>872</width>
-    <height>692</height>
+    <width>875</width>
+    <height>715</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -148,6 +148,9 @@
        <height>30</height>
       </rect>
      </property>
+     <property name="maximum">
+      <double>1024.000000000000000</double>
+     </property>
     </widget>
     <widget class="QLabel" name="lbAMP">
      <property name="geometry">
@@ -184,6 +187,9 @@
        <height>30</height>
       </rect>
      </property>
+     <property name="maximum">
+      <double>100.000000000000000</double>
+     </property>
     </widget>
     <widget class="QLabel" name="lbTIME">
      <property name="geometry">
@@ -206,6 +212,9 @@
        <width>71</width>
        <height>30</height>
       </rect>
+     </property>
+     <property name="maximum">
+      <double>65536.000000000000000</double>
      </property>
     </widget>
    </widget>
@@ -252,9 +261,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>470</y>
+      <y>460</y>
       <width>721</width>
-      <height>181</height>
+      <height>171</height>
      </rect>
     </property>
     <property name="title">
@@ -268,6 +277,9 @@
        <width>91</width>
        <height>30</height>
       </rect>
+     </property>
+     <property name="maximum">
+      <double>65536.000000000000000</double>
      </property>
     </widget>
     <widget class="QLabel" name="lblStartTime">
@@ -291,6 +303,9 @@
        <width>91</width>
        <height>30</height>
       </rect>
+     </property>
+     <property name="maximum">
+      <double>65536.000000000000000</double>
      </property>
     </widget>
     <widget class="QLabel" name="lblEndTime">
@@ -414,6 +429,54 @@
      </property>
     </widget>
    </widget>
+   <widget class="QCheckBox" name="ckbloop">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>630</y>
+      <width>97</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 75 11pt &quot;微软雅黑&quot;;</string>
+    </property>
+    <property name="text">
+     <string>循环产生</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rbv">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>630</y>
+      <width>113</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>电压量</string>
+    </property>
+    <attribute name="buttonGroup">
+     <string notr="true">buttonGroup</string>
+    </attribute>
+   </widget>
+   <widget class="QRadioButton" name="rbp">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>630</y>
+      <width>113</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>物理量</string>
+    </property>
+    <attribute name="buttonGroup">
+     <string notr="true">buttonGroup</string>
+    </attribute>
+   </widget>
    <zorder>gbPara</zorder>
    <zorder>gbWave</zorder>
    <zorder>qwtPlot</zorder>
@@ -421,13 +484,16 @@
    <zorder>btnClose</zorder>
    <zorder>btnLoad</zorder>
    <zorder>groupBox</zorder>
+   <zorder>ckbloop</zorder>
+   <zorder>rbv</zorder>
+   <zorder>rbp</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>872</width>
+     <width>875</width>
      <height>28</height>
     </rect>
    </property>
@@ -452,4 +518,7 @@
  </customwidgets>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

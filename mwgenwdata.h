@@ -21,6 +21,7 @@
 #include <QListWidgetItem>
 
 #define PI 3.1415926
+#define D_PTS 256
 namespace Ui {
 class MWGenWData;
 }
@@ -30,7 +31,7 @@ class SinusData: public QwtSyntheticPointData
 {
 public:
     SinusData(double amp, double time):
-        QwtSyntheticPointData( 100 )
+        QwtSyntheticPointData( D_PTS )
     {
         _amp = amp;
         _feq = 1.0 / time;
@@ -50,7 +51,7 @@ class TriData: public QwtSyntheticPointData
 {
 public:
     TriData(double amp, double time):
-        QwtSyntheticPointData( 100 )
+        QwtSyntheticPointData( D_PTS )
     {
         _amp = amp;
         _feq = 1.0 / time;
@@ -82,7 +83,7 @@ class SawData: public QwtSyntheticPointData
 {
 public:
     SawData(double amp, double time):
-        QwtSyntheticPointData( 100 )
+        QwtSyntheticPointData( D_PTS )
     {
         _amp = amp;
         _feq = 1.0 / time;
@@ -107,7 +108,7 @@ class SquData: public QwtSyntheticPointData
 {
 public:
     SquData(double amp, double duc, double time):
-        QwtSyntheticPointData( 100 ) {
+        QwtSyntheticPointData( D_PTS ) {
         _amp = amp;
         _dutyc = duc;
         _feq = 1.0 / time;
@@ -127,7 +128,8 @@ private:
 class CurveDataN
 {
 public:
-    CurveDataN() {
+    CurveDataN(int size) {
+        _t_size = size;
     }
     ~CurveDataN() {
 
@@ -137,6 +139,52 @@ public:
     }
     QPolygonF getpts() {
         return _points;
+    }
+
+    QPolygonF genWriteData() {
+        QPolygonF ret;
+        if(_t_size > 0) {
+            int pcnt = _points.count ();
+           // double stpval = _t_size / (double)pcnt;
+            double stpval = 0.0;// = (double)pcnt / (double)_t_size;
+            double segcnt = (double)_t_size / (double)pcnt;
+            double bs = 0.0;
+            double s = 0;
+            double pdx = 0.0;
+            QPointF pre;
+            QPointF nxt;
+            double k = 0.0;
+            double shift;
+            double dx = 0.0, dy = 0.0;
+
+            for(int i = 0, j = 1; i < pcnt; i++, j++) {
+                //Gen points
+                if(i != pcnt - 1) {
+                    pre = _points.at (i);
+                    nxt = _points.at (j);
+                } else {
+                    //last
+                    pre = _points.at (pcnt - 2);
+                    nxt = _points.at (pcnt - 1);
+                }
+                dx = nxt.x () - pre.x ();
+                dy = nxt.y () - pre.y ();
+                if(dx != 0.0) {
+                    k = dy / dx;
+                    shift = nxt.y () - k * nxt.x ();
+                    bs += segcnt;
+                    stpval = dx / segcnt;
+                    pdx += dx;
+                    for(; s < pdx ; s+=stpval) {
+                        ret << QPointF(s, k * s + shift);
+                    }
+                }
+
+            }
+            return ret;
+        }
+        ret.clear ();
+        return ret;
     }
     double getYRgn() {
         int len = _points.count ();
@@ -211,6 +259,7 @@ public:
 private:
     QVector <QPointF> ret;
     QPolygonF _points;
+    int _t_size;
 };
 
 
@@ -352,6 +401,8 @@ private slots:
 
     void on_btncurDel_clicked();
 
+    void on_ckbloop_clicked();
+
 private:
     Ui::MWGenWData *ui;
     int _dcnt;
@@ -384,6 +435,7 @@ private:
     QwtPlotMarker em;
     void initSwitchPara(bool flag);
     void switchWvRbs(int type, bool flag);
+    bool _loop;
 };
 
 #endif // MWGENWDATA_H

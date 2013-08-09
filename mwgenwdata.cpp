@@ -12,6 +12,7 @@
 #define S_ITEM_DATA "data"
 #define S_ITEM_DUYC "dutyc"
 #define S_ITEM_TYPE "type"
+#define S_ITEM_LOOP "loop"
 
 
 bool firstFlag = false;
@@ -34,13 +35,15 @@ MWGenWData::MWGenWData(QWidget *parent) :
     pc = NULL;
     _amp = 0.0;
     _time = 0.0;
-    _dutyc = 0.0;
-    _pcurve = new CurveDataN();
+    _dutyc = 50;
+    ui->sbDUTY->setValue(50.0);
+    _pcurve = new CurveDataN(D_PTS);
     //markerinit();
     gridinit ();
     //plot->setCanvasBackground (QColor("MidnightBlue"));
     plot->setCanvasBackground (QColor(0, 49, 114));
     initSwitchPara (false);
+    _loop = false;
 }
 
 MWGenWData::~MWGenWData()
@@ -97,14 +100,33 @@ void MWGenWData::on_btnGenWData_clicked() {
         break;
     }
 
-    //AMP
-    set.setValue (S_ITEM_AMP, QString::number (ui->sbAMP->value (), 'g', 3));
-    //TIME
-    set.setValue (S_ITEM_TIME, QString::number (ui->sbTIME->value (), 'g', 3));
+    if(_type != CUS) {
+        //AMP
+        set.setValue (S_ITEM_AMP, QString::number (ui->sbAMP->value (), 'g', 3));
+        //TIME
+        set.setValue (S_ITEM_TIME, QString::number (ui->sbTIME->value (), 'g', 3));
+    } else {
+        set.setValue(S_ITEM_AMP, QString::number(_pcurve->getYRgn(), 'g', 3));
+        set.setValue(S_ITEM_TIME, QString::number(_pcurve->getXRgn(), 'g', 3));
+    }
     //CURVE data
    // set.setValue(S_ITEM_DATA_X, slx);
    // set.setValue(S_ITEM_DATA_Y, sly);
+    set.setValue (S_ITEM_LOOP, _loop);
+
+
     set.setValue (S_ITEM_DATA, txy);
+
+#if 0
+    QStringList tmpstrlist;
+    QPolygonF tmppp = _pcurve->genWriteData ();
+    for(int i = 0; i < tmppp.count (); i++) {
+        tmpstrlist << consSdata (QString::number (tmppp.at (i).x (), 'g', 3),
+                                 QString::number (tmppp.at (i).y (), 'g', 3));
+    }
+    set.setValue (S_ITEM_DATA, tmpstrlist);
+
+#endif
 
 #if 0
     QString aa("(12.0,13.0)");
@@ -292,7 +314,6 @@ void MWGenWData::doPlot(QStringList strdata) {
 
         if(pc != NULL) {
             pc->setSamples (vec);
-
 #if 0
             switch (t) {
             case SINE:
@@ -555,22 +576,7 @@ void MWGenWData::on_sbTIME_valueChanged(double arg1) {
 void MWGenWData::on_sbDUTY_valueChanged(double arg1) {
     if(arg1 >= 0.0) {
         _dutyc = arg1;
-    }
-    switch (_type) {
-        case SINE:
-            doPlot(SINE);
-            break;
-        case SAW :
-            doPlot(SAW);
-            break;
-        case TRI :
-            doPlot(TRI);
-            break;
-        case SQU :
-            doPlot(SQU);
-            break;
-        default:
-            break;
+        doPlot(SQU);
     }
 }
 
@@ -578,12 +584,12 @@ void MWGenWData::on_sbDUTY_valueChanged(double arg1) {
 //load data files
 void MWGenWData::on_btnLoad_clicked() {
     QFileDialog fp;
-    //QString fn = fp.getSaveFileName (this, "Save Data File", ".", "Data (*.wdata)");
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"),
             ".",
             tr("Data (*.wdata)"));
-    if(fileName.size () > 0) {
+    if(fileName.size () <= 0) {
         qDebug() << fileName ;
+        return;
     }
     QSettings set(fileName, QSettings::IniFormat);
 
@@ -626,6 +632,8 @@ void MWGenWData::on_btnLoad_clicked() {
         ui->sbDUTY->setValue (_dutyc);
     }
 
+    _loop = set.value (S_ITEM_LOOP, false).toBool ();
+    ui->ckbloop->setChecked (_loop);
     //set data
     doPlot (set.value (S_ITEM_DATA, "").toStringList ());
     return;
@@ -733,6 +741,13 @@ void MWGenWData::on_lswcurv_itemClicked(QListWidgetItem *item) {
     em.attach (plot);
     qDebug () << pts;
 
+
+    //qDebug () << _pcurve->genWriteData ();
+
+#if 1
+
+#endif
+
 #if 0
     //_sym.drawSymbol (NULL, _pcurve->getpts ().at (0));
     //_sym.setPen (QPen(Qt::blue));
@@ -761,4 +776,9 @@ void MWGenWData::on_btncurDel_clicked() {
 
         }
     }
+}
+
+
+void MWGenWData::on_ckbloop_clicked() {
+   _loop = ui->ckbloop->isChecked ();
 }
