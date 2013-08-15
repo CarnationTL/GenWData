@@ -134,6 +134,7 @@ public:
     ~CurveDataN() {
 
     }
+
     void appendP(double x, double y) {
         _points << QPointF(x, y);
     }
@@ -403,10 +404,19 @@ private slots:
 
     void on_ckbloop_clicked();
 
+    void on_rbvoltage_clicked();
+
+    void on_rbphy_clicked();
+
+    void on_spVoltage_valueChanged(double arg1);
+
+    void on_spphysic_valueChanged(double arg1);
+
 private:
     Ui::MWGenWData *ui;
     int _dcnt;
     enum {SINE, SAW, TRI, SQU, CUS };
+    enum {VOL, PHY};
     int _type;
     void toggleDutycHide(bool f);
     QwtPlot *plot;
@@ -436,6 +446,15 @@ private:
     void initSwitchPara(bool flag);
     void switchWvRbs(int type, bool flag);
     bool _loop;
+    QString _vpstr;
+    double vpfactor;
+    double pvfactor;
+    bool vpflag;    //voltage = true
+
+    int getvpSet();
+    void vpSet(int t);
+    double phyfac;
+    double volfac;
 };
 
 #endif // MWGENWDATA_H

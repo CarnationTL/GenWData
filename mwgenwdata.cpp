@@ -13,6 +13,10 @@
 #define S_ITEM_DUYC "dutyc"
 #define S_ITEM_TYPE "type"
 #define S_ITEM_LOOP "loop"
+#define S_ITEM_VP "vpset"
+//#define S_ITEM_VPV "vpvalue"
+#define S_ITEM_VPPHY "vpphy"
+#define S_ITEM_VPVOL "vpvol"
 
 
 bool firstFlag = false;
@@ -44,6 +48,12 @@ MWGenWData::MWGenWData(QWidget *parent) :
     plot->setCanvasBackground (QColor(0, 49, 114));
     initSwitchPara (false);
     _loop = false;
+    vpfactor = 1.0;
+    pvfactor = 1.0;
+    ui->spVoltage->setValue (1.0);
+    ui->spphysic->setValue (1.0);
+    ui->rbphy->setChecked (true);
+    ui->lbamp_end->setText ("MM/C");
 }
 
 MWGenWData::~MWGenWData()
@@ -52,7 +62,6 @@ MWGenWData::~MWGenWData()
 }
 
 void MWGenWData::on_btnGenWData_clicked() {
-
 
     if(_type == INVALUE) {
         QMessageBox::warning (this, "INFO", "please select the wave type, thanks!");
@@ -112,27 +121,22 @@ void MWGenWData::on_btnGenWData_clicked() {
     //CURVE data
    // set.setValue(S_ITEM_DATA_X, slx);
    // set.setValue(S_ITEM_DATA_Y, sly);
+    if(getvpSet () == PHY || getvpSet () == -1) {
+        set.setValue (S_ITEM_VP, QString("PHY"));
+   //     set.setValue (S_ITEM_VPV, QString::number (pvfactor, 'g', 3));
+    } else if(getvpSet () == VOL) {
+        set.setValue (S_ITEM_VP, QString("VOL"));
+   //     set.setValue (S_ITEM_VPV, QString::number (vpfactor, 'g', 3));
+    }
+
+    double phy = ui->spphysic->value ();
+    set.setValue (S_ITEM_VPPHY, QString::number (phy, 'g', 3));
+    double vol = ui->spVoltage->value ();
+    set.setValue (S_ITEM_VPVOL, QString::number (vol, 'g', 3));
+
     set.setValue (S_ITEM_LOOP, _loop);
 
-
     set.setValue (S_ITEM_DATA, txy);
-
-#if 0
-    QStringList tmpstrlist;
-    QPolygonF tmppp = _pcurve->genWriteData ();
-    for(int i = 0; i < tmppp.count (); i++) {
-        tmpstrlist << consSdata (QString::number (tmppp.at (i).x (), 'g', 3),
-                                 QString::number (tmppp.at (i).y (), 'g', 3));
-    }
-    set.setValue (S_ITEM_DATA, tmpstrlist);
-
-#endif
-
-#if 0
-    QString aa("(12.0,13.0)");
-    qDebug () << deconsSdata (aa);
-#endif
-
 
 #if 0
     QStringList list =  set.value (S_ITEM_DATA).toStringList ();
@@ -147,6 +151,7 @@ void MWGenWData::on_btnGenWData_clicked() {
     qDebug () << setread.value (S_ITEM_AMP).toDouble ();
 
 #endif
+
 } 
 
 
@@ -521,6 +526,23 @@ void MWGenWData::switchWvRbs(int type, bool flag) {
     }
 }
 
+int MWGenWData::getvpSet() {
+    if(ui->rbphy->isChecked () == true) {
+        return PHY;
+    } else if(ui->rbvoltage->isChecked () == true) {
+        return VOL;
+    }
+    return -1;
+}
+
+void MWGenWData::vpSet(int t) {
+    if(t == PHY) {
+        ui->rbphy->setChecked (true);
+    } else if (t == VOL) {
+        ui->rbvoltage->setChecked (true);
+    }
+}
+
 void MWGenWData::on_sbAMP_valueChanged(double arg1) {
     if(arg1 >= 0.0) {
         _amp = arg1;
@@ -634,8 +656,26 @@ void MWGenWData::on_btnLoad_clicked() {
 
     _loop = set.value (S_ITEM_LOOP, false).toBool ();
     ui->ckbloop->setChecked (_loop);
+
+    _vpstr = set.value (S_ITEM_VP, QString("PHY")).toString ();
+    if(_vpstr.compare (QString("PHY")) == 0) {
+        ui->rbphy->setChecked (true);
+
+
+    } else if(_vpstr.compare (QString("VOL")) == 0) {
+        ui->rbphy->setChecked (true);
+
+    }
+
+    double phyfac = set.value (S_ITEM_VPPHY, 1.0).toDouble ();
+    double volfac = set.value (S_ITEM_VPVOL, 1.0).toDouble ();
+
+    ui->spphysic->setValue (phyfac);
+    ui->spVoltage->setValue (volfac);
+
     //set data
     doPlot (set.value (S_ITEM_DATA, "").toStringList ());
+
     return;
 }
 
@@ -778,7 +818,49 @@ void MWGenWData::on_btncurDel_clicked() {
     }
 }
 
-
 void MWGenWData::on_ckbloop_clicked() {
    _loop = ui->ckbloop->isChecked ();
+}
+
+void MWGenWData::on_rbvoltage_clicked() {
+    if(ui->rbvoltage->isChecked () == true) {
+        vpflag = true;
+    }
+    //根据电压到物理换算.
+    ui->lbamp_end->setText ("VOL");
+    //刷新UI
+}
+
+
+void MWGenWData::on_rbphy_clicked() {
+    if(ui->rbvoltage->isChecked () == true) {
+        vpflag = false;
+    }
+    ui->lbamp_end->setText ("MM/C");
+    //刷新UI
+}
+
+
+void MWGenWData::on_spVoltage_valueChanged(double arg1) {
+
+    phyfac = ui->spphysic->value ();
+    volfac = ui->spVoltage->value ();
+    if(phyfac != 0.0 && volfac != 0.0) {
+       pvfactor = phyfac / volfac;
+       vpfactor = volfac / phyfac;
+//       qDebug () << "pvfactor" << pvfactor;
+//       qDebug () << "vpfactor" << vpfactor;
+    }
+}
+
+void MWGenWData::on_spphysic_valueChanged(double arg1) {
+
+    phyfac = ui->spphysic->value ();
+    volfac = ui->spVoltage->value ();
+    if(phyfac != 0.0 && volfac != 0.0) {
+       pvfactor = phyfac / volfac;
+       vpfactor = volfac / phyfac;
+//       qDebug () << "pvfactor" << pvfactor;
+//       qDebug () << "vpfactor" << vpfactor;
+    }
 }
